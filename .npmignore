@@ -1,0 +1,10 @@
+guides/
+assets/
+src/
+benchmarks/
+node_modules/
+test/
+index.ts
+assets/*.psd
+**/vault.json
+tsconfig.*
