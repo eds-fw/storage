@@ -18,7 +18,7 @@
 - Pretty JSON format (depth=1)
 
 # API
-- class `Storage <V? extends JSONSupportedValueTypes, K? extends string>`
+- *class* `Storage <V? extends JSONSupportedValueTypes, K? extends string>` *as default*
 >- *constructor* `(path: string, autosave?: boolean | number)`;
 >- *field* `path: string`;
 >- *getter* `size: number`

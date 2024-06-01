@@ -1,11 +1,11 @@
-import { JSONSupportedValueTypes, equal } from "@easy-ds-bot/utils";
+import { JSONSupported, equal } from "@eds-fw/utils";
 import { accessSync, readFileSync } from "fs";
 import { writeFile } from "fs/promises";
 
 const DEFAULT_AUTOSAVE_INTERVAL = 60_000; //1 minute
 const loadedStorages: Record<string, Storage> = {};
 
-export class Storage<V extends JSONSupportedValueTypes = JSONSupportedValueTypes,
+export class Storage<V extends JSONSupported = JSONSupported,
                      K extends string = string> implements Map<K, V>
 {
     /** There can be no more than one Storage per file. If `true`, all instances with the same paths will be equal. */
@@ -110,7 +110,7 @@ export class Storage<V extends JSONSupportedValueTypes = JSONSupportedValueTypes
     public [Symbol.iterator] = this.#Map[Symbol.iterator];
     public [Symbol.toStringTag] = this.#Map[Symbol.toStringTag];
 
-    public static asJSON(map: Map<string, JSONSupportedValueTypes>, pretty: boolean = true): string
+    public static asJSON(map: Map<string, JSONSupported>, pretty: boolean = true): string
     {
         if (map.size == 0) return "{}";
         let entries = "";
@@ -122,3 +122,5 @@ export class Storage<V extends JSONSupportedValueTypes = JSONSupportedValueTypes
         return '{' + entries.slice(1) + (pretty ? '\n}' : '}');
     }
 }
+
+export default Storage;
