@@ -47,13 +47,13 @@
 # Setup
 1. Install `storage` via npm:
 ```bat
-npm i @easy-ds-bot/storage
+npm i @eds-fw/storage
 ```
 
 2. Use `storage`:
 ```js
 //file.js, type: CJS
-const { Storage } = require("@easy-ds-bot/storage");
+const { Storage } = require("@eds-fw/storage");
 const scores = new Storage(
     "./scores_data.json", //Warning! Path is calculated from CWD
     60_000 //Autosave timeout. Will be saved automatically every minute
@@ -74,7 +74,7 @@ console.log(storage.asJSON());
 Or, using TypeScript and "exact key types":
 ```ts
 //file.ts
-import { Storage } from "@easy-ds-bot/storage";
+import { Storage } from "@eds-fw/storage";
 type Keys_t = `score_${string}` | `bestScore_${string}`;
 const scores = new Storage<number, Keys_t>(
     "./scores.json",
@@ -86,5 +86,5 @@ scores.set("bestScore_me", 972); //OK
 scores.set("previousScore_me", 274); //TypeScript Error
 ```
 
-# [Source (git)](https://github.com/easy-ds-bot/storage)
-# [Issues (git)](https://github.com/easy-ds-bot/storage/issues)
+# [Source (git)](https://github.com/eds-fw/storage)
+# [Issues (git)](https://github.com/eds-fw/storage/issues)
