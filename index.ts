@@ -107,8 +107,9 @@ export class Storage<V extends JSONSupported = JSONSupported,
 
     //====================================================
 
-    public [Symbol.iterator] = this.#Map[Symbol.iterator];
-    public [Symbol.toStringTag] = this.#Map[Symbol.toStringTag];
+    public [Symbol.iterator] ()
+        { return this.#Map[Symbol.iterator] (); }
+    public [Symbol.toStringTag] = "Storage";
 
     public static asJSON(map: Map<string, JSONSupported>, pretty: boolean = true): string
     {
