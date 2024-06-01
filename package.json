@@ -14,7 +14,7 @@
     "tslib": "^2.6.1"
   },
   "name": "@eds-fw/storage",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Tiny & Simply 'Map'-based storage: set(), get(), save() and more",
   "main": "index",
   "repository": {
