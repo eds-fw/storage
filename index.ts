@@ -67,16 +67,16 @@ export class Storage<V extends JSONSupported = JSONSupported,
     {
         for (const val of this.values())
             if (equal(value, val))
-            return true;
+                return true;
         return false;
     }
     public getKey(value: V, single: boolean = false): K[]
     {
         const result: K[] = [];
-        for (const ent of this.entries())
-            if (equal(value, ent[0][1]))
+        for (const [k, v] of this.entries())
+            if (equal(value, v))
             {
-                result.push(ent[0]);
+                result.push(k);
                 if (single) break;
             }
         return result;
