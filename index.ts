@@ -6,7 +6,7 @@ const DEFAULT_AUTOSAVE_INTERVAL = 60_000; //1 minute
 const loadedStorages: Record<string, Storage> = {};
 
 export class Storage<V extends JSONSupported = JSONSupported,
-                     K extends string = string> implements Map<K, V>
+                     K extends string = string> extends Map<K, V>
 {
     /** There can be no more than one Storage per file. If `true`, all instances with the same paths will be equal. */
     static oneFile_oneStorage = true;
@@ -31,7 +31,7 @@ export class Storage<V extends JSONSupported = JSONSupported,
             return loadedStorages[path] as Storage<V, K>;
         else {
             const entries = Object.entries(JSON.parse(readFileSync(path).toString() || "{}")) as [K, V][];
-            this.#Map = new Map(entries);
+            super(entries);
         }
 
         this.path = path;
@@ -39,29 +39,6 @@ export class Storage<V extends JSONSupported = JSONSupported,
         if (autosave)
         setInterval(() => this.save(), typeof autosave == "number" ? autosave : DEFAULT_AUTOSAVE_INTERVAL);
     }
-
-    public get size(): number
-        { return this.#Map.size; }
-    public get(key: K): V | undefined
-        { return this.#Map.get(key); }
-    public has(key: K): boolean
-        { return this.#Map.has(key); }
-    
-    public set(key: K, value: V): this
-        { this.#Map.set(key, value); return this; }
-    public delete(key: K): boolean
-        { return this.#Map.delete(key); }
-    public clear(): void
-        { return this.#Map.clear(); }
-
-    public values(): IterableIterator<V>
-        { return this.#Map.values(); }
-    public keys(): IterableIterator<K>
-        { return this.#Map.keys(); }
-    public entries(): IterableIterator<[K, V]>
-        { return this.#Map.entries(); }
-    public forEach(callbackfn: (value: V, key: K, map: Map<K, V>) => unknown): void
-        { return this.#Map.forEach(callbackfn); }
 
     public hasValue(value: V): boolean
     {
@@ -107,8 +84,6 @@ export class Storage<V extends JSONSupported = JSONSupported,
 
     //====================================================
 
-    public [Symbol.iterator] ()
-        { return this.#Map[Symbol.iterator] (); }
     public [Symbol.toStringTag] = "Storage";
 
     public static asJSON(map: Map<string, JSONSupported>, pretty: boolean = true): string
@@ -123,5 +98,6 @@ export class Storage<V extends JSONSupported = JSONSupported,
         return '{' + entries.slice(1) + (pretty ? '\n}' : '}');
     }
 }
-
 export default Storage;
+
+
