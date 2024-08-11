@@ -3,16 +3,15 @@ import { accessSync, readFileSync } from "fs";
 import { writeFile } from "fs/promises";
 
 const DEFAULT_AUTOSAVE_INTERVAL = 60_000; //1 minute
-const loadedStorages: Record<string, Storage> = {};
 
 export class Storage<V extends JSONSupported = JSONSupported,
                      K extends string = string> extends Map<K, V>
 {
     /** There can be no more than one Storage per file. If `true`, all instances with the same paths will be equal. */
     static oneFile_oneStorage = true;
+    static #loadedStorages: Record<string, Storage> = {};
 
     #saving = false;
-    #Map!: Map<K, V>;
     public path!: string;
 
     /**
@@ -22,13 +21,13 @@ export class Storage<V extends JSONSupported = JSONSupported,
     {
         try {
             accessSync(path);
-        } catch (err)
-        {
-            throw new Error(`Database: File '${path}' not found:\n\t${err}`);
+        }
+        catch (err) {
+            throw new Error(`EDS Storage: File '${path}' not found:\n\t${err}`);
         }
 
-        if (Storage.oneFile_oneStorage && path in loadedStorages)
-            return loadedStorages[path] as Storage<V, K>;
+        if (Storage.oneFile_oneStorage && path in Storage.#loadedStorages)
+            return Storage.#loadedStorages[path] as Storage<V, K>;
         else {
             const entries = Object.entries(JSON.parse(readFileSync(path).toString() || "{}")) as [K, V][];
             super(entries);
@@ -39,6 +38,13 @@ export class Storage<V extends JSONSupported = JSONSupported,
         if (autosave)
         setInterval(() => this.save(), typeof autosave == "number" ? autosave : DEFAULT_AUTOSAVE_INTERVAL);
     }
+    /**
+     * @param path **WARNING!** It is calculated from `process.cwd()`
+     */
+    public static create<V extends JSONSupported = JSONSupported,
+                         K extends string = string>
+        (...params: ConstructorParameters<typeof Storage>): Storage<V, K>
+        { return new this(...params) }
 
     public hasValue(value: V): boolean
     {
@@ -62,7 +68,7 @@ export class Storage<V extends JSONSupported = JSONSupported,
     {
         const result = new Map();
         for (const [key, val] of this.entries())
-            if (callbackfn(val, key, this.#Map))
+            if (callbackfn(val, key, this))
                 result.set(key, val);
         return result;
     }
@@ -78,9 +84,7 @@ export class Storage<V extends JSONSupported = JSONSupported,
     }
 
     public get asJSON(): string
-    {
-        return Storage.asJSON(this.#Map);
-    }
+        { return Storage.asJSON(this); }
 
     //====================================================
 
@@ -101,3 +105,74 @@ export class Storage<V extends JSONSupported = JSONSupported,
 export default Storage;
 
 
+
+/**
+ * `Array`-based storage
+ */
+export class ArrayStorage<V extends JSONSupported = JSONSupported> extends Array<V>
+{
+    /** There can be no more than one ArrayStorage per file. If `true`, all instances with the same paths will be equal. */
+    static oneFile_oneStorage = true;
+    static #loadedStorages: Record<string, ArrayStorage> = {};
+
+    #saving = false;
+    public path!: string;
+
+    private constructor() { super() }
+
+    /**
+     * @param path **WARNING!** It is calculated from `process.cwd()`
+     */
+    public static create<V extends JSONSupported = JSONSupported>(path: string, autosave?: boolean | number)
+    {
+        const storage = new this();
+        try {
+            accessSync(path);
+        }
+        catch (err) {
+            throw new Error(`EDS ArrayStorage: File '${path}' not found:\n\t${err}`);
+        }
+
+        if (ArrayStorage.oneFile_oneStorage && path in ArrayStorage.#loadedStorages)
+            return ArrayStorage.#loadedStorages[path] as ArrayStorage<V>;
+        else {
+            const entries = JSON.parse(readFileSync(path).toString() || "[]") as V[];
+            storage.push(...entries);
+        }
+        storage.path = path;
+
+        if (autosave)
+        setInterval(() => storage.save(), typeof autosave == "number" ? autosave : DEFAULT_AUTOSAVE_INTERVAL);
+        
+        return storage;
+    }
+
+    //====================================================
+
+    public async save(): Promise<void>
+    {
+        if (this.#saving) return;
+        this.#saving = true;
+        await writeFile(this.path, this.asJSON);
+        this.#saving = false;
+    }
+
+    public get asJSON(): string
+        { return ArrayStorage.asJSON(this); }
+
+    //====================================================
+
+    public [Symbol.toStringTag] = "ArrayStorage";
+
+    public static asJSON(arr: JSONSupported[], pretty: boolean = true): string
+    {
+        if (arr.length == 0) return "[]";
+        let entries = "";
+
+        arr.forEach(v => {
+            entries += (pretty ? ',\n\t' : ',') + `${JSON.stringify(v)}`
+        });
+
+        return '[' + entries.slice(1) + (pretty ? '\n]' : ']');
+    }
+}

@@ -4,7 +4,7 @@
 
 <b align="center">
     
-    Tiny & Simply 'Map'-based storage: set(), get(), save() and more
+    Tiny & Simply 'Map'/'Array'-based storage with .save() method
     
 </b>
 <hr>
@@ -14,32 +14,34 @@
 - "One File - One Storage Exemplar" mechanism (bugs & multi-load protection)
 - Safe asynchronous `save()` (protection from multi-saving)
 - "Exact key types": you can only use the specified keys, e.g. `day ${number}` (`day 6`, `day 293`, `day 32`, etc., but not `hour 7`)
-- Additional methods: `hasValue()`, `getKey()`, `filter()` & easy JSON convertion
+- Additional Map methods: `hasValue()`, `getKey()`, `filter()` & easy JSON convertion
 - Pretty JSON format (depth=1)
 
 # API
-- *class* `Storage <V? extends JSONSupportedValueTypes, K? extends string>` *as default*
->- *constructor* `(path: string, autosave?: boolean | number)`;
->- *field* `path: string`;
->- *getter* `size: number`
->- `get (key: K): V | undefined`
->- `has (key: K): boolean`
->- `set (key: K, value: V): this`
->- `delete (key: K): boolean`
->- `clear (): void`
->- `values (): IterableIterator<V>`
->- `keys (): IterableIterator<K>`
->- `entries (): IterableIterator<[K, V]>`
->- `forEach (callbackfn: (value: V, key: K, map: Map<K, V>) => unknown): void`
+- *class* `Storage <V? extends JSONSupported, K? extends string>` *default export*
+>- ***extends Map\<K, V>***
+>- *constructor* `(path: string, autosave?: boolean | number)`
+>- *field* `path: string`
 >- `hasValue (value: V): boolean`
 >- `getKey (value: V, single?: boolean): K[]`
 >- `filter (callbackfn: (value: V, key: K, map: Map<K, V>) => boolean): Map<K, V>`
 >- *async* `save (): Promise<void>`
 >- *getter* `asJSON: string`
->- `[Symbol.iterator]: () => IterableIterator<[K, V]>`
 >- `[Symbol.toStringTag]: string`
->- *static* `asJSON (map: Map<string, JSONSupportedValueTypes>): string`
->- *static* *field* `oneFile_oneStorage: boolean`;
+>- *static* `create <V? extends JSONSupported, K? extends string> (...params: ConstructorParameters<typeof Storage>): Storage<V, K>`
+>- *static* `asJSON (map: Map<string, JSONSupported>): string`
+>- *static* *field* `oneFile_oneStorage: boolean`
+
+- *class* `ArrayStorage <V? extends JSONSupported>`
+>- ***extends Array\<V>***
+>- *private constructor* `()`
+>- *field* `path: string`
+>- *async* `save (): Promise<void>`
+>- *getter* `asJSON: string`
+>- `[Symbol.toStringTag]: string`
+>- *static* `create <V? extends JSONSupported> (path: string, autosave?: boolean | number): ArrayStorage<V>`
+>- *static* `asJSON (arr: JSONSupported[]): string`
+>- *static* *field* `oneFile_oneStorage: boolean`
 
 # Requirements
 - [NodeJS](https://nodejs.org/en), recommended `v18` or newer
