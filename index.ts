@@ -1,6 +1,7 @@
 import { JSONSupported, equal } from "@eds-fw/utils";
-import { accessSync, readFileSync } from "fs";
+import { accessSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { writeFile } from "fs/promises";
+import { resolve as resolvePath, dirname as getPathDir } from "path";
 
 const DEFAULT_AUTOSAVE_INTERVAL = 60_000; //1 minute
 
@@ -23,7 +24,10 @@ export class Storage<V extends JSONSupported = JSONSupported,
             accessSync(path);
         }
         catch (err) {
-            throw new Error(`EDS Storage: File '${path}' not found:\n\t${err}`);
+            const absolutePath = resolvePath(path);
+            const dir = getPathDir(absolutePath);
+            mkdirSync(dir, { recursive: true });
+            writeFileSync(absolutePath, "{}", "utf8");
         }
 
         if (Storage.oneFile_oneStorage && path in Storage.#loadedStorages)
@@ -130,7 +134,10 @@ export class ArrayStorage<V extends JSONSupported = JSONSupported> extends Array
             accessSync(path);
         }
         catch (err) {
-            throw new Error(`EDS ArrayStorage: File '${path}' not found:\n\t${err}`);
+            const absolutePath = resolvePath(path);
+            const dir = getPathDir(absolutePath);
+            mkdirSync(dir, { recursive: true });
+            writeFileSync(absolutePath, "[]", "utf8");
         }
 
         if (ArrayStorage.oneFile_oneStorage && path in ArrayStorage.#loadedStorages)
