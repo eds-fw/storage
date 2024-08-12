@@ -127,7 +127,7 @@ export class ArrayStorage<V extends JSONSupported = JSONSupported> extends Array
     /**
      * @param path **WARNING!** It is calculated from `process.cwd()`
      */
-    public static create<V extends JSONSupported = JSONSupported>(path: string, autosave?: boolean | number)
+    public static create<V extends JSONSupported = JSONSupported>(path: string, autosave?: boolean | number): ArrayStorage<V>
     {
         const storage = new this();
         try {
@@ -151,7 +151,7 @@ export class ArrayStorage<V extends JSONSupported = JSONSupported> extends Array
         if (autosave)
         setInterval(() => storage.save(), typeof autosave == "number" ? autosave : DEFAULT_AUTOSAVE_INTERVAL);
         
-        return storage;
+        return storage as ArrayStorage<V>;
     }
 
     //====================================================
