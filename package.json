@@ -1,11 +1,12 @@
 {
+  "type": "module",
   "devDependencies": {
     "@types/node": "^20.12.13",
     "typescript": "^5.4.5"
   },
   "scripts": {
     "TS_inspect": "npx tsc --noEmit --watch",
-    "TS_build": "npx tsc -p tsconfig.cjs.json && npx tsc -p tsconfig.esm.json && npx tsc -p tsconfig.types.json"
+    "TS_build": "npx tsc"
   },
   "dependencies": {
     "@eds-fw/utils": "^2.0.0",
@@ -16,7 +17,7 @@
   "name": "@eds-fw/storage",
   "version": "2.1.1",
   "description": "Tiny & Simply 'Map'-based storage: set(), get(), save() and more",
-  "main": "index",
+  "main": "index.mjs",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/eds-fw/storage.git"
@@ -35,18 +36,10 @@
     "url": "https://github.com/eds-fw/storage/issues"
   },
   "homepage": "https://github.com/eds-fw/storage#readme",
-  "exports": {
-    ".": {
-      "types": "./dist/types/index.d.ts",
-      "require": "./dist/cjs/index.js",
-      "import": "./dist/esm/index.js",
-      "default": "./dist/esm/index.js"
-    }
-  },
   "typesVersions": {
     ">=4.2": {
       "*": [
-        "dist/types/index.d.ts"
+        "index.d.mts"
       ]
     }
   }
