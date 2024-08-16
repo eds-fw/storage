@@ -31,7 +31,7 @@
   ],
   "author": "dtkdtk0",
   "license": "MIT",
-  "types": "./dist/index.d.ts",
+  "types": "index.d.mts",
   "bugs": {
     "url": "https://github.com/eds-fw/storage/issues"
   },
